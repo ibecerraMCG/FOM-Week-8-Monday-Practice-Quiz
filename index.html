@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 8 Monday Practice Quiz</title>
+<style>
+    /* --- Color Variables --- */
+    :root {
+        /* Default: Dark Theme */
+        --bg-color: #2d343e; /* Dark background */
+        --container-bg: #3c424f; /* Slightly lighter container */
+        --text-color: #e8e6e3; /* Light text */
+        --question-text-color: #8ab4f8; /* Light blue for questions */
+        --lo-text-color: #b0c4de; /* Lighter blue for learning objective */
+        --border-color: #555; /* Darker borders */
+        --separator-color: #4a4f5a;
+        --label-bg: #454c5a;
+        --label-border: #6c757d;
+        --label-hover-bg: #525966;
+        --label-hover-border: #7a828a;
+        --button-bg: #8ab4f8;
+        --button-text: #202124;
+        --button-hover-bg: #a3c5f9;
+        --button-disabled-bg: #5f6368;
+        --feedback-correct-bg: #344e41;
+        --feedback-correct-text: #c7f9cc;
+        --feedback-correct-border: #52b788;
+        --feedback-incorrect-bg: #5e2129;
+        --feedback-incorrect-text: #f8d7da;
+        --feedback-incorrect-border: #a4133c;
+        --feedback-rationale-text: #adb5bd; /* Lighter gray for rationale */
+        --feedback-source-text: #c7d3e0;
+        --feedback-separator: #6c757d;
+        --radio-accent: #8ab4f8;
+    }
+
+    .light-theme {
+        --bg-color: #eef2f7;
+        --container-bg: #ffffff;
+        --text-color: #343a40;
+        --question-text-color: #0056b3;
+        --lo-text-color: #5a6e8a;
+        --border-color: #dee2e6;
+        --separator-color: #e9ecef;
+        --label-bg: #f8f9fa;
+        --label-border: #ced4da;
+        --label-hover-bg: #e2e6ea;
+        --label-hover-border: #adb5bd;
+        --button-bg: #007bff;
+        --button-text: white;
+        --button-hover-bg: #0056b3;
+        --button-disabled-bg: #6c757d;
+        --feedback-correct-bg: #d1e7dd;
+        --feedback-correct-text: #0f5132;
+        --feedback-correct-border: #badbcc;
+        --feedback-incorrect-bg: #f8d7da;
+        --feedback-incorrect-text: #842029;
+        --feedback-incorrect-border: #f5c2c7;
+        --feedback-rationale-text: #495057;
+        --feedback-source-text: #343a40;
+        --feedback-separator: #ccc;
+        --radio-accent: #007bff;
+    }
+
+    /* --- General Styles --- */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        line-height: 1.7;
+        margin: 0;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        padding-bottom: 40px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    #theme-toggle-button {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        padding: 8px 12px;
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        border: 1px solid var(--label-border);
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        z-index: 1000;
+         transition: background-color 0.3s, color 0.3s;
+    }
+     #theme-toggle-button:hover {
+         opacity: 0.8;
+     }
+
+
+    #quiz-container {
+        max-width: 900px;
+        margin: 80px auto 30px auto;
+        background: var(--container-bg);
+        padding: 25px 35px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid var(--border-color);
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .question-block {
+        margin-bottom: 35px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid var(--separator-color);
+        transition: border-color 0.3s;
+    }
+
+    .question-block:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 5px;
+    }
+    
+    .learning-objective {
+        font-size: 0.85em;
+        font-style: italic;
+        color: var(--lo-text-color);
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed var(--separator-color);
+    }
+
+    .question-text {
+        font-weight: 600;
+        font-size: 1.1em;
+        margin-bottom: 18px;
+        color: var(--question-text-color);
+        transition: color 0.3s;
+    }
+
+    .options label {
+        display: block;
+        margin-bottom: 12px;
+        cursor: pointer;
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid var(--label-border);
+        background-color: var(--label-bg);
+        transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    }
+
+    .options label:hover {
+        background-color: var(--label-hover-bg);
+        border-color: var(--label-hover-border);
+    }
+
+    .options input[type="radio"]:checked+span {
+         font-weight: bold;
+         color: var(--question-text-color);
+    }
+    .options input[type="radio"] {
+        margin-right: 12px;
+        accent-color: var(--radio-accent);
+    }
+
+    .button-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .check-button {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.95em;
+        transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+        background-color: var(--button-bg);
+        color: var(--button-text);
+    }
+
+    .check-button:hover {
+        opacity: 0.85;
+    }
+
+     .check-button:disabled {
+         background-color: var(--button-disabled-bg);
+         cursor: not-allowed;
+         opacity: 0.7;
+     }
+
+    .feedback {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 6px;
+        font-size: 0.95em;
+        display: none;
+        border: 1px solid transparent;
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .feedback.correct {
+        background-color: var(--feedback-correct-bg);
+        color: var(--feedback-correct-text);
+        border-color: var(--feedback-correct-border);
+        display: block;
+    }
+
+    .feedback.incorrect {
+        background-color: var(--feedback-incorrect-bg);
+        color: var(--feedback-incorrect-text);
+        border-color: var(--feedback-incorrect-border);
+        display: block;
+    }
+
+    .feedback-status {
+         font-weight: bold;
+         font-size: 1.1em;
+         display: block;
+         margin-bottom: 8px;
+    }
+
+    .feedback-rationale {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--feedback-separator);
+        font-size: 0.9em;
+        color: var(--feedback-rationale-text);
+        transition: color 0.3s, border-color 0.3s;
+    }
+    
+    .feedback-source {
+        margin-top: 10px;
+        font-size: 0.85em;
+        font-style: italic;
+        color: var(--feedback-source-text);
+        background-color: rgba(0,0,0,0.1);
+        padding: 8px;
+        border-radius: 4px;
+    }
+
+    h1 {
+        text-align: center;
+        color: var(--question-text-color);
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-weight: 600;
+        transition: color 0.3s;
+    }
+
+</style>
+</head>
+<body>
+
+    <button id="theme-toggle-button">Toggle Theme</button>
+    <h1>Week 8 Monday Practice Quiz</h1>
+
+    <div id="quiz-container">
+        <!-- Questions will be loaded here by JavaScript -->
+    </div>
+
+<script>
+    const quizData = [
+        // Bacterial Morphology LOs
+        {
+            learningObjective: "LO1 (Bacterial Morphology): Differentiate between prokaryotes vs eukaryotes.",
+            question: "A microbiologist is examining an unknown unicellular organism. The organism lacks a nuclear membrane, mitochondria, and an endoplasmic reticulum, but contains ribosomes and a cell wall. Its genetic material is a single, supercoiled chromosome in the cytoplasm. Which of the following best classifies this organism?",
+            options: { A: "Eukaryote", B: "Prokaryote", C: "Fungus", D: "Protist", E: "Virus" },
+            correctAnswer: "B",
+            rationale: "The defining features of a prokaryote are the absence of a true nucleus and membrane-bound organelles like mitochondria. The presence of a single chromosome in the cytoplasm is also characteristic. Fungi and protists are eukaryotes. Viruses are not cellular.",
+            source: "'Prokaryotic ie no nucleus containing genetic material. Single chromosome supercoiled in cell cytoplasm. No mitochondria, Golgi bodies, endoplasmic reticulum.' (Bacterial Morphology Handout, Page 1)"
+        },
+        {
+            learningObjective: "LO1 (Bacterial Morphology): Differentiate between prokaryotes vs eukaryotes.",
+            question: "A key biochemical difference between the cell membranes of most prokaryotic and eukaryotic cells is the presence of which class of molecules that regulates membrane fluidity in eukaryotes?",
+            options: { A: "Peptidoglycan", B: "Lipopolysaccharide", C: "Hopanoids", D: "Sterols", E: "Teichoic acids" },
+            correctAnswer: "D",
+            rationale: "Eukaryotic cell membranes contain sterols, such as cholesterol, which help maintain membrane stability and fluidity. Most prokaryotic membranes lack sterols, although some use similar molecules called hopanoids. Peptidoglycan and teichoic acids are cell wall components, not membrane components.",
+            source: "'No sterols (eg cholesterol) in cell membrane.' (Bacterial Morphology Handout, Page 1). The diagram on slide 3 also explicitly notes that the eukaryotic cell membrane contains sterols."
+        },
+        {
+            learningObjective: "LO1 (Bacterial Morphology): Differentiate between prokaryotes vs eukaryotes.",
+            question: "An antimicrobial drug is developed that specifically targets the 80S ribosome to inhibit protein synthesis. Which of the following organisms would be most susceptible to this drug?",
+            options: { A: "Staphylococcus aureus", B: "Escherichia coli", C: "Candida albicans", D: "Mycobacterium tuberculosis", E: "Chlamydia trachomatis" },
+            correctAnswer: "C",
+            rationale: "Eukaryotic cells, including fungi like Candida albicans, have 80S ribosomes (composed of 60S and 40S subunits). Prokaryotic cells, including all the listed bacteria, have 70S ribosomes (composed of 50S and 30S subunits). A drug targeting the 80S ribosome would affect the fungus but not the bacteria.",
+            source: "'Bacterial ribosomes (total weight 70S) consisting of a heavier component (50S) and a lighter component (30S).' (Bacterial Morphology Handout, Page 9). 'EUKARYOTIC CELL [has] 80S [ribosomes]' (Bacterial Morphology Slides, Slide 56)"
+        },
+        {
+            learningObjective: "LO2 (Bacterial Morphology): Differentiate between Gram (+) vs Gram (-)",
+            question: "A Gram stain is performed on a bacterial sample. Microscopic examination reveals purple, grape-like clusters of cocci. The retention of the crystal violet stain in these organisms is primarily due to which structural feature?",
+            options: { A: "A thin peptidoglycan layer", B: "The presence of an outer membrane containing lipopolysaccharide", C: "A thick peptidoglycan layer", D: "The presence of porin proteins", E: "A protein-based capsule" },
+            correctAnswer: "C",
+            rationale: "Gram-positive bacteria stain purple because they have a very thick, highly cross-linked peptidoglycan cell wall that traps the crystal violet-iodine complex, preventing it from being washed out by the decolorizer. Gram-negative bacteria have a thin peptidoglycan layer and an outer membrane, which allows the stain to be washed away.",
+            source: "'Gram-positive cell walls. A Gram-positive cell wall contains a large amount of peptidoglycan on its surface.' (Bacterial Morphology Handout, Page 4). The diagram on slide 33 illustrates the thick peptidoglycan layer in Gram-positive bacteria."
+        },
+        {
+            learningObjective: "LO2 (Bacterial Morphology): Differentiate between Gram (+) vs Gram (-)",
+            question: "Which of the following components is found exclusively in the cell wall of Gram-negative bacteria and is responsible for many of its pathogenic properties, including endotoxin activity?",
+            options: { A: "Teichoic acid", B: "Lipoteichoic acid", C: "Peptidoglycan", D: "Lipopolysaccharide (LPS)", E: "Mycolic acid" },
+            correctAnswer: "D",
+            rationale: "Lipopolysaccharide (LPS) is a major component of the outer membrane of Gram-negative bacteria. It is not found in Gram-positive bacteria. The lipid A portion of LPS acts as an endotoxin, which can trigger a strong inflammatory response in the host. Teichoic and lipoteichoic acids are found in Gram-positive cell walls.",
+            source: "'Contains lipopolysaccharide...Lipid portion blends with other phospholipid membrane components (lipid A). Tail of lipopolysaccharide & sticking out are various polysaccharides.' (Bacterial Morphology Handout, Page 7)"
+        },
+        {
+            learningObjective: "LO2 (Bacterial Morphology): Differentiate between Gram (+) vs Gram (-)",
+            question: "A researcher is studying transport of small, hydrophilic molecules across the outer membrane of E. coli. This transport is facilitated by which of the following structures unique to Gram-negative bacteria?",
+            options: { A: "Fimbriae", B: "Teichoic acids", C: "Porin proteins", D: "Glycocalyx", E: "Flagella" },
+            correctAnswer: "C",
+            rationale: "The outer membrane of Gram-negative bacteria is a significant barrier. Porin proteins form channels or pores through this membrane, allowing for the passive diffusion of small, hydrophilic molecules into the periplasmic space. These structures are essential for nutrient uptake.",
+            source: "'Outer membrane specialized and contains tubular proteins called porin proteins which form channels.' (Bacterial Morphology Handout, Page 7). Slide 40 shows a diagram of a porin protein allowing small solutes to pass while excluding large molecules like vancomycin."
+        },
+        {
+            learningObjective: "LO3 (Bacterial Morphology): Explain Gram’s stain theory & technique",
+            question: "In the Gram staining procedure, a substance is added after the crystal violet to form a complex with the dye, which helps it adhere more strongly to the bacterial cell wall. What is the term for this substance?",
+            options: { A: "Decolorizer", B: "Counterstain", C: "Fixative", D: "Mordant", E: "Buffer" },
+            correctAnswer: "D",
+            rationale: "A mordant is a substance that fixes a stain or dye, making it more resistant to removal. In the Gram stain, iodine acts as the mordant, forming a large crystal violet-iodine complex that gets trapped in the thick peptidoglycan of Gram-positive cells.",
+            source: "'Add mordant (a substance which bonds the crystal violet to bacterial cell wall)—Gram’s iodine' (Bacterial Morphology Handout, Page 8). Slide 45 explicitly labels iodine's function as a mordant."
+        },
+        {
+            learningObjective: "LO3 (Bacterial Morphology): Explain Gram’s stain theory & technique",
+            question: "A student performs a Gram stain on a known culture of E. coli, a Gram-negative rod. However, upon microscopic examination, the student observes purple rods. Which of the following procedural errors is the most likely cause of this result?",
+            options: { A: "The safranin step was omitted.", B: "The decolorization step with alcohol was too brief.", C: "The slide was not heat-fixed properly.", D: "The iodine (mordant) step was omitted.", E: "The decolorization step with alcohol was too long." },
+            correctAnswer: "B",
+            rationale: "The decolorization step is critical for differentiating Gram-positive and Gram-negative bacteria. If this step is too short (under-decolorization), the crystal violet-iodine complex will not be sufficiently washed out of the thin peptidoglycan layer of Gram-negative cells, causing them to incorrectly appear purple (Gram-positive) instead of red.",
+            source: "'If human cells noted are still blue (slide under-decolorized) mistake in technique.' (Bacterial Morphology Handout, Page 8). The same principle applies to bacteria; under-decolorizing will cause Gram-negative organisms to retain the blue/purple stain."
+        },
+        {
+            learningObjective: "LO3 (Bacterial Morphology): Explain Gram’s stain theory & technique",
+            question: "After correctly performing all steps of the Gram stain procedure on a mixed culture of Staphylococcus aureus (Gram-positive) and Pseudomonas aeruginosa (Gram-negative), what will be the final appearance of the two organisms?",
+            options: { A: "Both will be purple.", B: "Both will be red/pink.", C: "S. aureus will be red/pink, and P. aeruginosa will be purple.", D: "S. aureus will be purple, and P. aeruginosa will be red/pink.", E: "Both will be colorless." },
+            correctAnswer: "D",
+            rationale: "S. aureus, being Gram-positive, will retain the crystal violet-iodine complex and appear purple. P. aeruginosa, being Gram-negative, will be decolorized by the alcohol and will then take up the safranin counterstain, appearing red or pink.",
+            source: "'One group of bacteria retains blue color because of abundance of peptidoglycan in their cell walls (Gram-positive). One group lost blue color in the wash & required re-staining with red safranin (Gram-negative).' (Bacterial Morphology Handout, Page 8)"
+        },
+        {
+            learningObjective: "LO4 (Bacterial Morphology): Identify basic structural features of bacteria.",
+            question: "A bacterium is observed to possess long, filamentous appendages that rotate to propel the cell through a liquid medium. These structures are primarily composed of flagellin protein. What are these appendages called?",
+            options: { A: "Fimbriae", B: "Sex pili", C: "Flagella", D: "Glycocalyx", E: "Cilia" },
+            correctAnswer: "C",
+            rationale: "Flagella are whip-like structures responsible for bacterial motility. They are composed of the protein flagellin and rotate like a propeller. Fimbriae and pili are involved in attachment, while the glycocalyx is a sugar coat. Cilia are found in eukaryotes.",
+            source: "'Composed of a protein which can arrange itself into hollow cylinder 10-20 µm in length. Rotate either clockwise or counterclockwise at varying speeds.' (Bacterial Morphology Handout, Page 2)"
+        },
+        {
+            learningObjective: "LO4 (Bacterial Morphology): Identify basic structural features of bacteria.",
+            question: "A strain of E. coli is found to be highly adherent to bladder epithelial cells, a key step in causing urinary tract infections. This adherence is most likely mediated by which of the following surface structures?",
+            options: { A: "Flagella", B: "Spores", C: "Ribosomes", D: "Fimbriae", E: "Glycocalyx" },
+            correctAnswer: "D",
+            rationale: "Fimbriae are short, sticky, hair-like projections that allow bacteria to adhere to surfaces, including host cells. This adherence is a critical virulence factor as it prevents the bacteria from being washed away and allows for colonization. While the glycocalyx can also aid attachment, fimbriae are the primary structures for specific adherence.",
+            source: "'Sticky, non-motile, hair-like projections (“fringe”) around many bacteria...Mediate adherence to inert or biological surfaces (somatic pili) such as one another & target cells.' (Bacterial Morphology Handout, Page 2)"
+        },
+        {
+            learningObjective: "LO4 (Bacterial Morphology): Identify basic structural features of bacteria.",
+            question: "A strain of Streptococcus pneumoniae is particularly virulent because it can evade phagocytosis by host immune cells. This anti-phagocytic property is primarily due to which of the following structures?",
+            options: { A: "Peptidoglycan", B: "Fimbriae", C: "A polysaccharide capsule", D: "A sex pilus", E: "An endospore" },
+            correctAnswer: "C",
+            rationale: "The capsule, a type of glycocalyx, is a tightly bound layer of extracellular polymer (usually polysaccharide) that surrounds the bacterial cell. Its slippery nature makes it difficult for phagocytes to engulf the bacterium. It also covers surface components (PAMPs) that would otherwise be recognized by the immune system.",
+            source: "'Capsule: tightly bound layer adherent to the cell wall. a. Resists phagocytosis... c. Covers bacterial pathogen-associated molecular patterns (PAMPs).' (Bacterial Morphology Handout, Page 3)"
+        },
+        {
+            learningObjective: "LO5 (Bacterial Morphology): Explain how bacteria divide.",
+            question: "The process of bacterial cell division, where one cell splits into two identical daughter cells, is known as:",
+            options: { A: "Mitosis", B: "Meiosis", C: "Binary fission", D: "Budding", E: "Sporulation" },
+            correctAnswer: "C",
+            rationale: "Prokaryotes like bacteria reproduce asexually through a process called binary fission. This involves replication of the circular chromosome followed by the division of the cytoplasm. Mitosis and meiosis are processes of cell division in eukaryotes. Budding is seen in yeast, and sporulation is a survival mechanism, not reproduction.",
+            source: "'Bacterial reproduction (binary fission)' (Bacterial Morphology Slides, Slide 43)"
+        },
+        {
+            learningObjective: "LO5 (Bacterial Morphology): Explain how bacteria divide.",
+            question: "During bacterial division, the formation of the division septum is initiated by the polymerization of a specific tubulin-like protein into a ring at the mid-cell. Which protein is responsible for forming this contractile ring?",
+            options: { A: "Actin", B: "Myosin", C: "FtsZ", D: "MreB", E: "Flagellin" },
+            correctAnswer: "C",
+            rationale: "FtsZ is a protein that is homologous to eukaryotic tubulin. It assembles into a contractile ring (the Z-ring) at the future site of cell division. The constriction of this ring, along with the synthesis of new cell wall material, leads to the formation of the septum that divides the cell.",
+            source: "'Fts proteins localize to division site (divisome)... Fts Z→ polymerizes into tubulin → constricting Z ring.' (Bacterial Morphology Slides, Slide 36)"
+        },
+        {
+            learningObjective: "LO5 (Bacterial Morphology): Explain how bacteria divide.",
+            question: "The divisome is a complex of proteins that assembles at the site of bacterial cell division. Its primary function is to synthesize which major cell structure to separate the two daughter cells?",
+            options: { A: "The outer membrane", B: "The flagellar basal body", C: "The peptidoglycan septum", D: "The chromosome", E: "The capsule" },
+            correctAnswer: "C",
+            rationale: "The divisome machinery coordinates the inward growth of the cell membrane and the synthesis of the peptidoglycan cell wall to form the septum. This cross-wall eventually splits, separating the two newly formed cells.",
+            source: "'Fts proteins localize to division site (divisome)... peptidoglycan synthesis.' (Bacterial Morphology Slides, Slide 36)"
+        },
+        {
+            learningObjective: "LO6 (Bacterial Morphology): Discuss how bacterial spores are resistant to destruction.",
+            question: "Certain genera of bacteria, such as Bacillus and Clostridium, can form highly resistant, dormant structures to survive harsh environmental conditions like extreme heat, radiation, and toxic chemicals. What are these structures called?",
+            options: { A: "Capsules", B: "Plasmids", C: "Endospores", D: "Biofilms", E: "Inclusion bodies" },
+            correctAnswer: "C",
+            rationale: "Endospores (or spores) are metabolically dormant structures that protect the bacterial genome during periods of environmental stress. They are not reproductive structures but rather a survival mechanism. They can remain viable for extremely long periods and are notoriously difficult to destroy.",
+            source: "'Released spore can survive extreme heat, lack of water, toxic chemicals, radiation.' (Bacterial Morphology Slides, Slide 58)"
+        },
+        {
+            learningObjective: "LO6 (Bacterial Morphology): Discuss how bacterial spores are resistant to destruction.",
+            question: "The process of forming an endospore begins with the asymmetric division of the cell, resulting in a smaller compartment that will become the spore. What is this smaller compartment called?",
+            options: { A: "The mother cell", B: "The forespore", C: "The exosporium", D: "The cortex", E: "The vegetative cell" },
+            correctAnswer: "B",
+            rationale: "During sporulation, the cytoplasmic membrane invaginates to separate a small portion of the cytoplasm and a copy of the chromosome. This smaller compartment is the forespore, which is then engulfed by the larger mother cell and develops into the mature spore.",
+            source: "'septum separates forespore from mother cell.' (Bacterial Morphology Slides, Slide 60)"
+        },
+        {
+            learningObjective: "LO6 (Bacterial Morphology): Discuss how bacterial spores are resistant to destruction.",
+            question: "The remarkable resistance of bacterial spores to heat and dehydration is largely attributed to the accumulation of a specific substance in the spore core and the presence of a thick, protective layer. Which substance is pumped into the core?",
+            options: { A: "Sodium chloride", B: "Calcium", C: "Glucose", D: "ATP", E: "RNA" },
+            correctAnswer: "B",
+            rationale: "During sporulation, large amounts of calcium, complexed with dipicolinic acid, accumulate in the spore core. This complex helps to dehydrate the core, which stabilizes its proteins and DNA against heat denaturation.",
+            source: "'Ca++ added to spore core.' (Bacterial Morphology Slides, Slide 62)"
+        },
+        {
+            learningObjective: "LO7 (Bacterial Morphology): Outline the biochemical composition of peptidoglycan.",
+            question: "The glycan backbone of peptidoglycan is a polymer composed of which two alternating sugar derivatives?",
+            options: { A: "Glucose and fructose", B: "N-acetylglucosamine (NAG) and N-acetylmuramic acid (NAM)", C: "Ribose and deoxyribose", D: "Galactose and mannose", E: "Sialic acid and glucuronic acid" },
+            correctAnswer: "B",
+            rationale: "The polysaccharide chains that form the rigid part of peptidoglycan consist of repeating units of N-acetylglucosamine (NAG) and N-acetylmuramic acid (NAM) linked together.",
+            source: "'Rigid part are the chains of alternating, connected sugars, N-acetylmuramic acid (NAM) and N-acetylglucosamine (NAG).' (Bacterial Morphology Handout, Page 5)"
+        },
+        {
+            learningObjective: "LO7 (Bacterial Morphology): Outline the biochemical composition of peptidoglycan.",
+            question: "In the structure of peptidoglycan, short peptide chains are attached to the glycan backbone. These peptide chains are covalently linked to which of the sugar molecules?",
+            options: { A: "N-acetylglucosamine (NAG)", B: "Glucose", C: "Ribose", D: "N-acetylmuramic acid (NAM)", E: "Fructose" },
+            correctAnswer: "D",
+            rationale: "The tetrapeptide or pentapeptide side chains that are essential for cross-linking the peptidoglycan structure are attached specifically to the N-acetylmuramic acid (NAM) residues of the glycan chains.",
+            source: "'Hanging down from each NAM: short peptide chain of amino acids (terminal aa D-alanine).' (Bacterial Morphology Handout, Page 5)"
+        },
+        {
+            learningObjective: "LO7 (Bacterial Morphology): Outline the biochemical composition of peptidoglycan.",
+            question: "The strength and rigidity of the peptidoglycan layer comes from the cross-linking of adjacent glycan chains. This cross-linking occurs between which components of the structure?",
+            options: { A: "Two N-acetylglucosamine (NAG) molecules", B: "Two N-acetylmuramic acid (NAM) molecules", C: "A sugar on one chain and a sugar on an adjacent chain", D: "The peptide side chains of adjacent glycan strands", E: "The glycan backbone and the cell membrane" },
+            correctAnswer: "D",
+            rationale: "The peptide side chains attached to NAM residues are linked together, either directly or via a peptide interbridge (like the pentaglycine bridge in S. aureus). This cross-linking creates a strong, mesh-like molecule that encases the bacterium.",
+            source: "'Another chain of five glycines (in most bacteria) connecting the D-alanine in one chain to the adjacent lysine in the next chain.' (Bacterial Morphology Handout, Page 5)"
+        },
+        // Gram-positive Cocci LOs
+        {
+            learningObjective: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics.",
+            obfuscatedLO: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics.",
+            question: "A throat swab from a child with pharyngitis grows beta-hemolytic colonies on blood agar. A filter paper disk impregnated with a specific antibiotic is placed on the plate, and after incubation, a zone of inhibition is observed. This finding strongly suggests the organism is Streptococcus pyogenes. What antibiotic is in the disk?",
+            options: { A: "Optochin", B: "Vancomycin", C: "Penicillin", D: "Bacitracin", E: "Erythromycin" },
+            correctAnswer: "D",
+            rationale: "Group A streptococcus (Streptococcus pyogenes) is uniquely susceptible to the antibiotic bacitracin among the beta-hemolytic streptococci. The presence of a zone of inhibition around a bacitracin 'A' disk is a classic presumptive identification method.",
+            source: "'Unlike other beta-hemolytic organisms-- susceptible to bacitracin. i. Filter-paper disk impregnated with bacitracin (A disk) placed on agar...' (Gram-Positive Cocci Handout, Page 4)"
+        },
+        {
+            learningObjective: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics: Streptococcus agalactiae",
+            obfuscatedLO: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics.",
+            question: "A beta-hemolytic streptococcus is isolated from a vaginal swab of a pregnant woman. To identify it as Streptococcus agalactiae (Group B strep), the isolate is streaked perpendicular to a streak of Staphylococcus aureus on a blood agar plate. The observation of an arrowhead-shaped zone of enhanced hemolysis at the junction of the two streaks confirms the identification. What is this test called?",
+            options: { A: "Catalase test", B: "Coagulase test", C: "CAMP test", D: "Bile esculin test", E: "Optochin test" },
+            correctAnswer: "C",
+            rationale: "The CAMP test is used to identify Group B streptococci. S. agalactiae produces a protein called CAMP factor that acts synergistically with the beta-lysin produced by Staphylococcus aureus to cause an enhanced zone of hemolysis, which typically appears in the shape of an arrowhead.",
+            source: "'If organism streaked at right angles to S. aureus has arrow-head-shaped, enhanced zone of hemolysis, unknown streptococcus is Group B strep (CAMP factor synergistic with S. aureus β-lysin → enhanced zone of hemolysis).' (Gram-Positive Cocci Handout, Page 5)"
+        },
+        {
+            learningObjective: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics: Streptococcus pneumoniae",
+            obfuscatedLO: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics.",
+            question: "An alpha-hemolytic, Gram-positive coccus is isolated from a sputum sample. To confirm if the organism is Streptococcus pneumoniae, which test would be most useful?",
+            options: { A: "Susceptibility to bacitracin", B: "Growth in 6.5% NaCl", C: "Coagulase production", D: "Susceptibility to optochin", E: "CAMP test" },
+            correctAnswer: "D",
+            rationale: "Streptococcus pneumoniae is characteristically sensitive to optochin, showing a zone of inhibition around an optochin disk. Viridans streptococci, which are also alpha-hemolytic and part of the normal oral flora, are resistant to optochin. This test is key for differentiation.",
+            source: "'Separated from the viridans streptococci by optochin... disk... zone of inhibition of growth around pneumococci (not other oral strep).' (Gram-Positive Cocci Handout, Page 7)"
+        },
+        {
+            learningObjective: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics: Enterococcus spp",
+            obfuscatedLO: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics.",
+            question: "A Gram-positive coccus is isolated from the urine of a patient with a UTI. The organism is catalase-negative and grows on blood agar. To differentiate Enterococcus from other streptococci (like Group D Streptococcus gallolyticus), which of the following tests is most definitive?",
+            options: { A: "Hemolysis pattern on blood agar", B: "Growth in the presence of 6.5% NaCl", C: "Optochin susceptibility", D: "Bacitracin susceptibility", E: "Coagulase test" },
+            correctAnswer: "B",
+            rationale: "Both Enterococcus and Group D streptococci can hydrolyze esculin in the presence of bile. However, a key distinguishing feature is the ability of Enterococcus to tolerate high salt concentrations. Therefore, growth in a broth containing 6.5% NaCl is indicative of Enterococcus.",
+            source: "'Distinguished from S. gallolyticus a. Only enterococci can grow in 6.5% NaCl.' (Gram-Positive Cocci Handout, Page 7)"
+        },
+        {
+            learningObjective: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics: Viridans streptococci",
+            obfuscatedLO: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics.",
+            question: "An alpha-hemolytic, catalase-negative, Gram-positive coccus is isolated from a blood culture in a patient with endocarditis following a dental procedure. The organism is found to be resistant to optochin. This laboratory profile is most consistent with which group of organisms?",
+            options: { A: "Streptococcus pneumoniae", B: "Staphylococcus aureus", C: "Enterococcus faecalis", D: "Viridans streptococci", E: "Streptococcus pyogenes" },
+            correctAnswer: "D",
+            rationale: "Viridans streptococci are a major cause of subacute bacterial endocarditis, often following dental work. They are part of the normal oral flora, are typically alpha-hemolytic, and are distinguished from the other major alpha-hemolytic pathogen, S. pneumoniae, by their resistance to optochin.",
+            source: "'Separated from the viridans streptococci by optochin (ethylhydrocupreine hydrochloride--derivative of quinine) disk... zone of inhibition of growth around pneumococci (not other oral strep).' (Gram-Positive Cocci Handout, Page 7)"
+        },
+        {
+            learningObjective: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics: Staphylococcus aureus",
+            obfuscatedLO: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics.",
+            question: "A microbiology lab identifies a Gram-positive coccus that is catalase-positive and demonstrates the ability to clot rabbit plasma. Which organism is this?",
+            options: { A: "Staphylococcus epidermidis", B: "Staphylococcus aureus", C: "Streptococcus pyogenes", D: "Enterococcus faecalis", E: "Staphylococcus saprophyticus" },
+            correctAnswer: "B",
+            rationale: "Among the staphylococci (which are all catalase-positive), Staphylococcus aureus is uniquely identified by its production of coagulase, an enzyme that converts fibrinogen to fibrin, causing plasma to clot. Other staphylococci are coagulase-negative.",
+            source: "'S. aureus... separated from all other staphylococci by coagulase test (clots rabbit plasma; other staphylococci cannot).' (Gram-Positive Cocci Handout, Page 2)"
+        },
+        {
+            learningObjective: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics: Coagulase-negative staphylococci",
+            obfuscatedLO: "LO1 (Gram-positive Cocci): Distinguish among the following based upon their laboratory characteristics.",
+            question: "A patient with an indwelling central venous catheter develops a bloodstream infection. The culture grows a Gram-positive coccus that is catalase-positive but fails to clot rabbit plasma and does not ferment mannitol. Which of the following is the most likely causative organism?",
+            options: { A: "Staphylococcus aureus", B: "Enterococcus faecalis", C: "Staphylococcus epidermidis", D: "Streptococcus pyogenes", E: "Streptococcus pneumoniae" },
+            correctAnswer: "C",
+            rationale: "Coagulase-negative staphylococci, with S. epidermidis being the most common, are frequent causes of nosocomial and device-related infections. They are differentiated from S. aureus by their inability to produce coagulase and, in most cases, their inability to ferment mannitol.",
+            source: "'Coagulase-negative staph unable to ferment mannitol like S. aureus.' and 'S. epidermidis (most common) → nosocomial infections i. Infections on vascular access devices...' (Gram-Positive Cocci Handout, Pages 2-3)"
+        },
+        {
+            learningObjective: "LO2 (Gram-positive Cocci): List the virulence factors & major diseases associated with S. pyogenes.",
+            question: "A patient presents with pharyngitis and a subsequent diagnosis of rheumatic fever. The primary virulence factor of Streptococcus pyogenes that is anti-phagocytic and is a major determinant of serotype is which of the following?",
+            options: { A: "Hyaluronic acid capsule", B: "Streptolysin O", C: "M protein", D: "Streptokinase", E: "C5a peptidase" },
+            correctAnswer: "C",
+            rationale: "M protein is a critical virulence factor for S. pyogenes. It coats the cell surface, binds fibrinogen, and inhibits phagocytosis by preventing complement activation. Antibodies against the M protein are protective, but there are many different serotypes, complicating immunity.",
+            source: "'M protein (major virulence factor) a. Coats entire cell surface → adherence to skin cells (keratinocytes) b. Binds to fibrinogen to further prevent phagocytosis.' (Gram-Positive Cocci Handout, Page 4)"
+        },
+        {
+            learningObjective: "LO2 (Gram-positive Cocci): List the virulence factors & major diseases associated with S. agalactiae.",
+            question: "A newborn develops meningitis and sepsis within the first week of life. The mother had received no prenatal care. The most likely causative agent for this early-onset neonatal disease is a bacterium that colonizes the maternal GU tract. Which organism is it?",
+            options: { A: "Listeria monocytogenes", B: "Streptococcus agalactiae", C: "Staphylococcus aureus", D: "Streptococcus pyogenes", E: "Escherichia coli" },
+            correctAnswer: "B",
+            rationale: "Streptococcus agalactiae (Group B Strep) is the leading cause of neonatal sepsis and meningitis. It colonizes the gastrointestinal and genitourinary tracts of pregnant women and can be transmitted to the infant during birth, causing severe early-onset disease.",
+            source: "'Newborns, especially premature infants, pass through the birth canal → aspirate infected secretions → serious infections (bacteremia, meningitis, pneumonia).' (Gram-Positive Cocci Handout, Page 6)"
+        },
+        {
+            learningObjective: "LO2 (Gram-positive Cocci): List the virulence factors & major diseases associated with S. pneumoniae.",
+            question: "A 65-year-old man develops community-acquired pneumonia. The primary virulence factor of Streptococcus pneumoniae that allows it to resist phagocytosis and is the basis for current vaccines is its:",
+            options: { A: "Pneumolysin", B: "IgA protease", C: "Polysaccharide capsule", D: "Neuraminidase", E: "Teichoic acid" },
+            correctAnswer: "C",
+            rationale: "The polysaccharide capsule is the most important virulence factor of S. pneumoniae. It is anti-phagocytic, and antibodies directed against the capsule are protective. Vaccines (like PCV13/20 and PPSV23) are composed of capsular polysaccharides from the most common disease-causing serotypes.",
+            source: "'On blood agar α-hemolytic with mucoid colonies (thick capsule--major virulence factor)' and 'Capsule retards phagocytosis & made of long polymers of repeating monosaccharides.' (Gram-Positive Cocci Handout, Page 7)"
+        },
+        {
+            learningObjective: "LO2 (Gram-positive Cocci): List the virulence factors & major diseases associated with S. aureus.",
+            question: "A patient develops a severe skin abscess. The causative agent, Staphylococcus aureus, is able to evade opsonization and phagocytosis by binding the Fc portion of IgG antibodies in a functionally inverted orientation. Which virulence factor is responsible for this activity?",
+            options: { A: "Coagulase", B: "Hyaluronidase", C: "Exfoliative toxin", D: "Protein A", E: "Teichoic acid" },
+            correctAnswer: "D",
+            rationale: "Protein A is a major virulence factor of S. aureus found on its surface. It has high affinity for the Fc region of IgG, which orients the antibody 'backwards' and prevents the Fab region from binding to the bacterium. This interferes with opsonization and subsequent phagocytosis.",
+            source: "'Protein A (major virulence factor); binds Fc portion of Abs inverting them inhibiting opsonization clearance.' (Gram-Positive Cocci Handout, Page 2)"
+        },
+        {
+            learningObjective: "LO2 (Gram-positive Cocci): List the virulence factors & major diseases associated with coagulase-negative staphylococci.",
+            question: "An elderly patient with a prosthetic hip joint develops a chronic, difficult-to-treat infection at the site of the prosthesis. The most likely causative organism is a common skin commensal known for its ability to form a protective biofilm on inert surfaces. Which organism is this?",
+            options: { A: "Staphylococcus aureus", B: "Streptococcus pyogenes", C: "Enterococcus faecalis", D: "Staphylococcus epidermidis", E: "Corynebacterium jeikeium" },
+            correctAnswer: "D",
+            rationale: "Staphylococcus epidermidis and other coagulase-negative staphylococci are the most common causes of infections on prosthetic devices. Their primary virulence factor in this context is the production of a polysaccharide capsule (PS/A) that allows them to adhere to surfaces and form a biofilm, which protects them from antibiotics and host defenses.",
+            source: "'S. epidermidis (most common) → nosocomial infections i. Infections on... prosthetic implants (hips, knees, heart valves). ii. Capsular polysaccharide (PS/A) promotes adherence to inert surfaces.' (Gram-Positive Cocci Handout, Page 3)"
+        },
+        {
+            learningObjective: "LO3 (Gram-positive Cocci): Describe the pathogenesis of Toxic shock syndrome.",
+            question: "A 24-year-old woman presents with high fever, hypotension, diffuse erythematous rash, and multi-organ dysfunction. The pathogenesis of her condition involves a toxin that acts as a superantigen, binding directly to MHC class II molecules and T-cell receptors, causing massive, non-specific T-cell activation. This mechanism describes:",
+            options: { A: "Staphylococcal enterotoxin", B: "Exfoliative toxin", C: "Streptolysin O", D: "Toxic shock syndrome toxin-1 (TSST-1)", E: "Pneumolysin" },
+            correctAnswer: "D",
+            rationale: "TSST-1, produced by some strains of S. aureus, is a superantigen. Instead of being processed and presented, it cross-links MHC II on antigen-presenting cells directly to the T-cell receptor, bypassing normal antigen specificity. This leads to the activation of a large fraction of T-cells (up to one in five), causing a massive release of cytokines (a 'cytokine storm') that results in the systemic effects of TSS.",
+            source: "'Toxic-shock syndrome toxin-1 (TSST-1); simultaneously binds MHC II on antigen-presenting cells & T cell receptors → cytokine storm releasing massive amounts of IL-2 from one in five T cells → leading to fever, hypotension, diffuse erythema...' (Gram-Positive Cocci Handout, Page 2)"
+        },
+        {
+            learningObjective: "LO3 (Gram-positive Cocci): Describe the pathogenesis of Scarlet fever.",
+            question: "A 7-year-old child with pharyngitis develops a diffuse, sandpapery rash, a strawberry tongue, and Pastia's lines in the skin folds. This condition, scarlet fever, is caused by which of the following?",
+            options: { A: "Systemic invasion of Streptococcus pyogenes into the bloodstream", B: "An autoimmune reaction to M protein", C: "The action of streptolysin O on dermal cells", D: "The systemic effects of a streptococcal pyrogenic exotoxin (Spe)", E: "The formation of immune complexes in the skin" },
+            correctAnswer: "D",
+            rationale: "Scarlet fever is a complication of streptococcal pharyngitis caused by strains of S. pyogenes that produce a specific toxin called streptococcal pyrogenic exotoxin (Spe), also known as erythrogenic toxin. The toxin is disseminated systemically and causes the characteristic rash and other symptoms.",
+            source: "'streptococcal pyrogenic exotoxins [Spe] (cleaves intercellular barrier proteins)' is the caption for the images of scarlet fever. (Gram-positive Cocci Slides, Slide 26)"
+        },
+        {
+            learningObjective: "LO3 (Gram-positive Cocci): Describe the pathogenesis of Puerperal sepsis.",
+            question: "Historically, 'childbed fever' was a major cause of maternal mortality. This condition, known as puerperal sepsis, is a severe infection of the uterus following childbirth. Which bacterial species is a notorious cause, known for its degradative enzymes and ability to be transmitted from mother to baby?",
+            options: { A: "Staphylococcus aureus", B: "Streptococcus agalactiae", C: "Enterococcus faecalis", D: "Clostridium perfringens", E: "Listeria monocytogenes" },
+            correctAnswer: "B",
+            rationale: "Streptococcus agalactiae (Group B Strep) is a well-known cause of puerperal sepsis and postpartum endometritis. It produces degradative enzymes like hyaluronidase that facilitate tissue spread and can be transmitted from the colonized maternal GU tract during childbirth.",
+            source: "'Notorious for causing puerperal sepsis (childbed fever), post-partum endometritis, & bacteremia.' (Gram-Positive Cocci Handout, Page 6) and 'hyaluronidase → tissue spread from mother to baby' (Gram-positive Cocci Slides, Slide 32)"
+        },
+        {
+            learningObjective: "LO3 (Gram-positive Cocci): Describe the pathogenesis of Dental caries.",
+            question: "The pathogenesis of dental caries primarily involves the production of two substances by Viridans streptococci (e.g., S. mutans) in the presence of dietary sucrose. What are these two substances?",
+            options: { A: "Proteases and lipases", B: "Biofilm and ammonia", C: "Glucans (biofilm) and lactic acid", D: "Collagenase and hyaluronidase", E: "Hydrogen peroxide and ethanol" },
+            correctAnswer: "C",
+            rationale: "S. mutans uses sucrose to produce sticky extracellular polysaccharides called glucans, which allow it to adhere firmly to the tooth surface and form a biofilm (plaque). It also ferments the sucrose, producing lactic acid. This acid becomes trapped within the biofilm, lowering the local pH and causing demineralization of the tooth enamel, which is the initial step of a cavity.",
+            source: "'mutans strep: sucrose → acetic & lactic acid' and the diagram shows biofilm formation leading to localized acidification and demineralization. (Gram-positive Cocci Slides, Slide 35)"
+        },
+        // Gram-positive Rods LOs
+        {
+            learningObjective: "LO1 (Gram-positive Rods): Outline the mechanism by which the toxins of various Gram-positive bacilli cause human disease.",
+            question: "A patient presents with flaccid paralysis after consuming improperly canned food. The toxin responsible acts at the neuromuscular junction to prevent the release of acetylcholine from motor neurons. This mechanism of action is characteristic of which organism?",
+            options: { A: "Bacillus anthracis", B: "Clostridium tetani", C: "Clostridium botulinum", D: "Corynebacterium diphtheriae", E: "Listeria monocytogenes" },
+            correctAnswer: "C",
+            rationale: "Clostridium botulinum produces botulinum neurotoxin, an A-B toxin that binds to motor neuron end plates and prevents the release of the excitatory neurotransmitter acetylcholine. This blockade of neuromuscular transmission results in flaccid paralysis.",
+            source: "'Like C. tetani it is an A-B toxin which binds to motor neuron end plates → prevents the release of acetyl choline → flaccid paralysis.' (Gram-positive Rods Handout, Page 5)"
+        },
+        {
+            learningObjective: "LO1 (Gram-positive Rods): Outline the mechanism by which the toxins of various Gram-positive bacilli cause human disease.",
+            question: "A child from a region with low vaccination rates develops a severe sore throat with a thick, gray pseudomembrane. The systemic effects, such as myocarditis, are caused by a toxin that inhibits protein synthesis in human cells. This toxin achieves its effect by inactivating which of the following cellular components?",
+            options: { A: "The 80S ribosome", B: "DNA polymerase", C: "Elongation factor 2 (EF-2)", D: "The sodium-potassium pump", E: "Adenylate cyclase" },
+            correctAnswer: "C",
+            rationale: "Diphtheria toxin, produced by Corynebacterium diphtheriae, is a phage-mediated A-B toxin. The A subunit enters the host cell cytoplasm and catalyzes the ADP-ribosylation of elongation factor 2 (EF-2), a crucial component of the protein synthesis machinery. This irreversible inactivation of EF-2 halts protein synthesis, leading to cell death.",
+            source: "'Phage-mediated, C. diphtheriae toxin is of the A-B variety; blocks human ribosomal elongation factor (EF-2) inhibiting protein synthesis & killing infected cells.' (Gram-positive Rods Handout, Page 7)"
+        },
+        {
+            learningObjective: "LO1 (Gram-positive Rods): Outline the mechanism by which the toxins of various Gram-positive bacilli cause human disease.",
+            question: "An unvaccinated patient develops spastic paralysis, lockjaw, and opisthotonos after sustaining a puncture wound. The toxin responsible causes these symptoms by which of the following mechanisms?",
+            options: { A: "Blocking the release of acetylcholine at the neuromuscular junction", B: "Activating adenylate cyclase, leading to fluid accumulation", C: "Preventing the release of inhibitory neurotransmitters like GABA and glycine", D: "Forming pores in muscle cell membranes", E: "Inhibiting protein synthesis by targeting ribosomes" },
+            correctAnswer: "C",
+            rationale: "Tetanospasmin, the exotoxin from Clostridium tetani, travels via retrograde axonal transport to the central nervous system. There, it acts on inhibitory interneurons, cleaving synaptobrevin and preventing the release of inhibitory neurotransmitters (GABA and glycine). This loss of inhibition leads to unregulated excitatory synaptic activity, causing spastic paralysis.",
+            source: "'subunit A prevents GABA release from inhibitory neurons → excitatory neurons cause jerky, spastic contraction of voluntary muscles.' (Gram-positive Rods Handout, Page 5)"
+        },
+        {
+            learningObjective: "LO2 (Gram-positive Rods): Identify classic symptoms and signs of diseases caused by these organisms.",
+            question: "A 35-year-old farmer presents with a skin lesion on his arm that began as an itchy papule and progressed over several days to a painless, black, necrotic ulcer with surrounding edema. He reports recently assisting with the birth of a calf. This clinical presentation is most characteristic of which disease?",
+            options: { A: "Gas gangrene", B: "Cutaneous anthrax", C: "Cutaneous diphtheria", D: "Tetanus", E: "Listeriosis" },
+            correctAnswer: "B",
+            rationale: "The hallmark of cutaneous anthrax is the development of a 'malignant pustule,' which is a painless, pruritic papule that evolves into a vesicle and then a black, depressed eschar (ulcer) surrounded by significant edema. A history of contact with livestock is a classic risk factor.",
+            source: "'Spores germinate → toxin → pruritic papule → vesicles surround papule → black ulcer (eschar)surrounded by edema (‘malignant pustule’).' (Gram-positive Rods Handout, Page 2)"
+        },
+        {
+            learningObjective: "LO2 (Gram-positive Rods): Identify classic symptoms and signs of diseases caused by these organisms.",
+            question: "An elderly patient in a long-term care facility develops profuse, watery diarrhea after a course of clindamycin. Colonoscopy reveals yellowish-white plaques forming a pseudomembrane on the colonic mucosa. This condition is caused by the overgrowth of which organism?",
+            options: { A: "Bacillus cereus", B: "Listeria monocytogenes", C: "Clostridium perfringens", D: "Clostridioides difficile", E: "Corynebacterium diphtheriae" },
+            correctAnswer: "D",
+            rationale: "Antibiotic-associated colitis, often called pseudomembranous colitis, is most commonly caused by the overgrowth of toxigenic Clostridioides difficile. Broad-spectrum antibiotics disrupt the normal colon flora, allowing C. difficile to proliferate and produce toxins that damage the intestinal lining, leading to the formation of a pseudomembrane.",
+            source: "'Colonoscopy shows pseudomembranes. Which of the following is the likely cause? B. Clostridioides difficile.' (Gram-positive Rods Slides, Slide 64)"
+        },
+        {
+            learningObjective: "LO2 (Gram-positive Rods): Identify classic symptoms and signs of diseases caused by these organisms.",
+            question: "A 4-month-old infant presents with constipation, poor feeding, a weak cry, and significant hypotonia ('floppy baby syndrome'). The parents report feeding the infant honey to soothe a cough. This clinical picture is highly suggestive of:",
+            options: { A: "Infant botulism", B: "Neonatal tetanus", C: "Inhalational anthrax", D: "Necrotizing enterocolitis", E: "Listeriosis" },
+            correctAnswer: "A",
+            rationale: "Infant botulism results from the ingestion of C. botulinum spores (often from honey), which then germinate and produce toxin in the infant's GI tract. The toxin causes a descending flaccid paralysis, presenting as constipation, poor suck, weakness, and hypotonia (floppy baby syndrome).",
+            source: "'Babies ingest spores contaminating honey... spores germinate in GI tract → produce enough toxin to cause floppy baby syndrome.' (Gram-positive Rods Handout, Page 5)"
+        },
+        {
+            learningObjective: "LO3 (Gram-positive Rods): Predict the natural habitat of major pathogenic Gram-positive bacilli.",
+            question: "A microbiology lab frequently isolates a spore-forming, Gram-positive rod from soil samples and as a common contaminant on culture plates. This organism is ubiquitous in soil and vegetation. Which genus does this describe?",
+            options: { A: "Clostridium", B: "Listeria", C: "Corynebacterium", D: "Bacillus", E: "Actinomyces" },
+            correctAnswer: "D",
+            rationale: "The genus Bacillus is characterized by its ubiquitous presence in the environment, particularly in soil. Because of this, it is a very common laboratory contaminant.",
+            source: "'Ubiquitous in soil & vegetation--can contaminate laboratory cultures.' (Gram-positive Rods Handout, Page 1)"
+        },
+        {
+            learningObjective: "LO3 (Gram-positive Rods): Predict the natural habitat of major pathogenic Gram-positive bacilli.",
+            question: "A patient develops gas gangrene in a deep, traumatic wound. The causative organism, Clostridium perfringens, thrives in this environment because it has what specific metabolic requirement?",
+            options: { A: "It is a strict aerobe", B: "It is a facultative anaerobe", C: "It is an obligate anaerobe", D: "It requires high salt concentrations", E: "It requires a low pH" },
+            correctAnswer: "C",
+            rationale: "Clostridium species are obligate anaerobes, meaning they cannot grow in the presence of oxygen and are often killed by it. Deep, necrotic wounds provide an ideal anaerobic environment for Clostridium spores to germinate and cause infection.",
+            source: "'> 80 species, obligate anaerobes (killed by O2)' (Gram-positive Rods Slides, Slide 23). 'Soil saprophytes which require anaerobic habitat...' (Gram-positive Rods Handout, Page 3)"
+        },
+        {
+            learningObjective: "LO3 (Gram-positive Rods): Predict the natural habitat of major pathogenic Gram-positive bacilli.",
+            question: "An outbreak of febrile gastroenteritis and meningitis is linked to the consumption of contaminated soft cheese and deli meats. The causative organism is a small, motile Gram-positive rod known to grow at refrigeration temperatures. Which pathogen is the most likely cause?",
+            options: { A: "Bacillus cereus", B: "Clostridium botulinum", C: "Corynebacterium diphtheriae", D: "Listeria monocytogenes", E: "Bacillus anthracis" },
+            correctAnswer: "D",
+            rationale: "Listeria monocytogenes is a food-borne pathogen found ubiquitously in soil, water, and animals. It is notorious for contaminating unpasteurized dairy products (like soft cheeses) and processed meats. A key characteristic is its ability to grow at cold temperatures (psychrotolerance), allowing it to multiply in refrigerated foods.",
+            source: "'Often transmitted in unpasteurized dairy products, contaminated vegetables, and contaminated animal products like cheeses and meats.' (Gram-positive Rods Handout, Page 7)"
+        },
+        {
+            learningObjective: "LO4 (Gram-positive Rods): Describe major laboratory characteristics of Bacillus anthracis.",
+            obfuscatedLO: "LO4 (Gram-positive Rods): Describe major laboratory characteristics of important Gram-positive bacilli.",
+            question: "A large, non-motile, non-hemolytic Gram-positive rod is isolated from a cutaneous lesion. On blood agar, the colonies are large, opaque, and when lifted with a loop, they stand upright, resembling a 'Medusa head'. These characteristics are classic for which organism?",
+            options: { A: "Clostridium tetani", B: "Bacillus cereus", C: "Listeria monocytogenes", D: "Bacillus anthracis", E: "Corynebacterium diphtheriae" },
+            correctAnswer: "D",
+            rationale: "Bacillus anthracis is distinguished from the more common Bacillus cereus by being non-motile and non-hemolytic. Its colonies on blood agar are tenacious and have a characteristic 'Medusa head' appearance due to the parallel alignment of long chains of bacilli.",
+            source: "'Blood agar: non-hemolytic; growth → large, opaque, raised colonies which hold tightly to agar surface (when a colony edge is lifted with loop → stand upright-- head of Medusa).' (Gram-positive Rods Handout, Page 1)"
+        },
+        {
+            learningObjective: "LO4 (Gram-positive Rods): Describe major laboratory characteristics of Clostridium perfringens.",
+            obfuscatedLO: "LO4 (Gram-positive Rods): Describe major laboratory characteristics of important Gram-positive bacilli.",
+            question: "A Gram-positive, anaerobic rod isolated from a wound culture shows a unique pattern of hemolysis on a blood agar plate: an inner, complete zone of beta-hemolysis and an outer, incomplete zone of alpha-hemolysis. This 'double zone' of hemolysis is characteristic of:",
+            options: { A: "Clostridium perfringens", B: "Clostridium tetani", C: "Bacillus anthracis", D: "Listeria monocytogenes", E: "Clostridium botulinum" },
+            correctAnswer: "A",
+            rationale: "Clostridium perfringens produces multiple hemolysins. On anaerobic blood agar, this results in a characteristic double zone of hemolysis. The inner zone is complete (beta-hemolysis) due to theta toxin, and the outer zone is partial (alpha-hemolysis) due to alpha toxin (lecithinase).",
+            source: "'C. perfringens →“double zone” hemolysis (anaerobic blood agar plate) I. Alpha (α) hemolysis--incomplete (outer) zone of hemolysis II. θ (theta) hemolysis complete (inner) zone of hemolysis.' (Gram-positive Rods Handout, Page 3)"
+        },
+        {
+            learningObjective: "LO4 (Gram-positive Rods): Describe major laboratory characteristics of Listeria monocytogenes.",
+            obfuscatedLO: "LO4 (Gram-positive Rods): Describe major laboratory characteristics of important Gram-positive bacilli.",
+            question: "A culture from the cerebrospinal fluid of a newborn with meningitis grows a small, aerobic, Gram-positive rod that is beta-hemolytic and catalase-positive. A wet prep of the broth culture shows a characteristic end-over-end 'tumbling' motility. This description best fits:",
+            options: { A: "Streptococcus agalactiae", B: "Corynebacterium diphtheriae", C: "Listeria monocytogenes", D: "Bacillus cereus", E: "Clostridium tetani" },
+            correctAnswer: "C",
+            rationale: "Listeria monocytogenes is a small Gram-positive rod that can be mistaken for streptococci due to its beta-hemolysis, but it is catalase-positive. Its most unique laboratory feature is its characteristic tumbling motility when viewed in a wet mount from a broth culture grown at room temperature.",
+            source: "'Unique tumbling motility in wet preps.' (Gram-positive Rods Handout, Page 7)"
+        },
+        {
+            learningObjective: "LO4 (Gram-positive Rods): Describe major laboratory characteristics of Corynebacterium diphtheriae.",
+            obfuscatedLO: "LO4 (Gram-positive Rods): Describe major laboratory characteristics of important Gram-positive bacilli.",
+            question: "A microbiologist is attempting to isolate Corynebacterium diphtheriae from a throat swab. The specimen is plated on a special medium containing potassium tellurite. What is the expected appearance of C. diphtheriae colonies on this selective medium?",
+            options: { A: "Large, mucoid, beta-hemolytic colonies", B: "White colonies with a 'Medusa head' appearance", C: "Colonies with a 'double zone' of hemolysis", D: "Black colonies with a garlic-like odor", E: "Small, translucent colonies with alpha-hemolysis" },
+            correctAnswer: "D",
+            rationale: "Potassium tellurite agar is a selective medium used for the isolation of C. diphtheriae. The organism is able to reduce tellurite to metallic tellurium, which results in the formation of distinctive black colonies. The medium also inhibits the growth of most normal upper respiratory flora.",
+            source: "'Selective media required (agar containing cystine & potassium tellurite (K2TeO3) inhibits normal flora → black colonies with garlic-like odor.' (Gram-positive Rods Handout, Page 6)"
+        }
+    ];
+
+    const quizContainer = document.getElementById('quiz-container');
+    const themeToggleButton = document.getElementById('theme-toggle-button');
+    const bodyElement = document.body;
+
+    function applyTheme(theme) {
+        if (theme === 'light') {
+            bodyElement.classList.add('light-theme');
+            themeToggleButton.textContent = 'Switch to Dark Mode';
+        } else {
+            bodyElement.classList.remove('light-theme');
+            themeToggleButton.textContent = 'Switch to Light Mode';
+        }
+        localStorage.setItem('quizTheme', theme);
+    }
+
+    function loadQuiz() {
+        quizData.forEach((qData, index) => {
+            const questionBlock = document.createElement('div');
+            questionBlock.classList.add('question-block');
+            questionBlock.id = `q${index}`;
+
+            const loText = document.createElement('div');
+            loText.classList.add('learning-objective');
+            
+            // Store the full LO in a data attribute for later reveal
+            loText.dataset.fullLo = qData.learningObjective; 
+            
+            // Use the obfuscated version if it exists, otherwise use the full one
+            loText.innerHTML = qData.obfuscatedLO || qData.learningObjective; 
+            
+            questionBlock.appendChild(loText);
+
+            const questionText = document.createElement('p');
+            questionText.classList.add('question-text');
+            questionText.innerHTML = `${index + 1}. ${qData.question}`;
+            questionBlock.appendChild(questionText);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('options');
+
+            for (const optionKey in qData.options) {
+                const optionId = `q${index}_${optionKey}`;
+                const label = document.createElement('label');
+                label.htmlFor = optionId;
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = `q${index}`;
+                radioInput.value = optionKey;
+                radioInput.id = optionId;
+                const labelText = document.createElement('span');
+                labelText.textContent = ` ${optionKey}. ${qData.options[optionKey]}`;
+                label.appendChild(radioInput);
+                label.appendChild(labelText);
+                optionsDiv.appendChild(label);
+            }
+            questionBlock.appendChild(optionsDiv);
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.classList.add('button-container');
+
+            const checkButton = document.createElement('button');
+            checkButton.textContent = 'Check Answer';
+            checkButton.classList.add('check-button');
+            checkButton.onclick = () => checkAnswer(index);
+            buttonContainer.appendChild(checkButton);
+            
+            questionBlock.appendChild(buttonContainer);
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.classList.add('feedback');
+            questionBlock.appendChild(feedbackDiv);
+
+            quizContainer.appendChild(questionBlock);
+        });
+    }
+
+    function checkAnswer(questionIndex) {
+        const questionBlockElement = document.getElementById(`q${questionIndex}`);
+        const selectedRadioButton = questionBlockElement.querySelector('input[type="radio"]:checked');
+
+        if (!selectedRadioButton) {
+            alert("Please select an answer first.");
+            return;
+        }
+
+        const selectedOptionKey = selectedRadioButton.value;
+        const qData = quizData[questionIndex];
+        const feedbackDiv = questionBlockElement.querySelector('.feedback');
+        const correct = selectedOptionKey === qData.correctAnswer;
+        
+        const loTextElement = questionBlockElement.querySelector('.learning-objective');
+        
+        // Reveal the full learning objective from the data attribute
+        loTextElement.innerHTML = loTextElement.dataset.fullLo;
+
+        let feedbackHTML = '';
+
+        if (correct) {
+            feedbackHTML = `<span class="feedback-status">Correct!</span>`;
+            feedbackDiv.className = 'feedback correct';
+        } else {
+             feedbackHTML = `<span class="feedback-status">Incorrect. The correct answer is ${qData.correctAnswer}.</span>`;
+            feedbackDiv.className = 'feedback incorrect';
+        }
+
+        feedbackHTML += `<div class="feedback-rationale"><strong>Rationale:</strong> ${qData.rationale}</div>`;
+        feedbackHTML += `<div class="feedback-source"><strong>Source:</strong> ${qData.source}</div>`;
+        feedbackDiv.innerHTML = feedbackHTML;
+    }
+
+    themeToggleButton.addEventListener('click', () => {
+        if (bodyElement.classList.contains('light-theme')) {
+            applyTheme('dark');
+        } else {
+            applyTheme('light');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('quizTheme') || 'dark';
+        applyTheme(savedTheme);
+        loadQuiz();
+    });
+
+</script>
+  
+</body>
+</html>
